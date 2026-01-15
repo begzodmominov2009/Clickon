@@ -1,19 +1,23 @@
 import React from 'react'
 import { AiOutlineEye } from 'react-icons/ai'
-import { BsCartPlusFill } from 'react-icons/bs'
+import { BsCartPlusFill, BsFillCartDashFill } from 'react-icons/bs'
 import { FaArrowRight, FaCartPlus } from 'react-icons/fa'
 import { FaHeartCirclePlus } from 'react-icons/fa6'
 import { FcDislike, FcLike } from 'react-icons/fc'
 import useCountdown from '../../../hooks/useCountdown'
+import { useDispatch, useSelector } from 'react-redux'
+import { addToCart, removeToCart } from '../../../features/CartSlice'
 
 const BeastDeals = ({ products }) => {
     const sliceProduct = products?.slice(54, 62)
     const product = products ? products[0] : ""
     const time = useCountdown("2026-02-01T00:00:00");
+    const dispatch = useDispatch()
+    const cart = useSelector((state) => state.cart)
 
     return (
         <section className='mt-10 sm:mt-18'>
-            <div className="container mx-auto px-0 md:px-2 2xl:px-33">
+            <div className="container mx-auto px-2 md:px-0 2xl:px-2 w-full">
                 <div className='flex items-center justify-between'>
                     <div className="flex items-center gap-5">
                         <p className="text-[22px] font-medium">Best Deals</p>
@@ -117,19 +121,28 @@ const BeastDeals = ({ products }) => {
                                         <FaHeartCirclePlus className="text-black hover:text-white transition-colors duration-300" />
                                     </div>
 
-                                    {/* CENTER */}
-                                    <div
-                                        className="
-        bg-gray-200 rounded-full w-8 h-8 flex
-        items-center justify-center cursor-pointer
-        opacity-0 group-hover:opacity-100
-        hover:bg-[#FA8232]
-        transition-all duration-700
-        pointer-events-auto
-      "
-                                    >
-                                        <BsCartPlusFill className="text-black hover:text-white transition-colors duration-300" />
-                                    </div>
+                                    {cart.find(item => item.id === el.id) ? (
+                                        <div 
+                                        onClick={() => dispatch(removeToCart(el))}
+                                        className="bg-gray-200 rounded-full w-8 h-8 flex
+      items-center justify-center cursor-pointer
+      opacity-0 group-hover:opacity-100
+      hover:bg-[#FA8232]
+      transition-all duration-700">
+                                            <BsFillCartDashFill className="text-black hover:text-white transition-colors duration-300" />
+                                        </div>
+                                    ) : (
+                                        <div
+                                            onClick={() => dispatch(addToCart(el))}
+                                            className="  bg-gray-200 rounded-full w-8 h-8 flex
+      items-center justify-center cursor-pointer
+      opacity-0 group-hover:opacity-100
+      hover:bg-[#FA8232]
+      transition-all duration-700"
+                                        >
+                                            <BsCartPlusFill className="text-black hover:text-white transition-colors duration-300" />
+                                        </div>
+                                    )}
 
                                     {/* RIGHT */}
                                     <div

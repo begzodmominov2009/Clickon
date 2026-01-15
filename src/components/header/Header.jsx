@@ -5,12 +5,14 @@ import { Link } from "react-router-dom";
 import { FiSearch, FiShoppingCart } from "react-icons/fi";
 import { AiOutlineHeart, AiOutlineUser } from "react-icons/ai";
 import { HiBars3 } from "react-icons/hi2";
+import { useSelector } from "react-redux";
+
 
 const Header = () => {
     const [language, setLanguage] = useState("Eng");
     const [currency, setCurrency] = useState("USD");
     const [hideTopBar, setHideTopBar] = useState(false);
-
+    const cart = useSelector((state) => state.cart)
     const lastScrollY = useRef(0);
     const upScroll = useRef(0);
     const downScroll = useRef(0);
@@ -121,7 +123,10 @@ const Header = () => {
                     </div>
 
                     <div className="hidden lg:flex gap-5 text-white text-[29px]">
-                        <Link to="/cart"><FiShoppingCart /></Link>
+                        <div className="relative">
+                            <Link to="/cart"><FiShoppingCart /></Link>
+                            <span className="absolute -top-2 text-[11px] -right-1 bg-[white] text-[black] px-[3px] rounded-full">{cart.length}</span>
+                        </div>
                         <Link to="/like"><AiOutlineHeart /></Link>
                         <Link to="/register"><AiOutlineUser /></Link>
                     </div>

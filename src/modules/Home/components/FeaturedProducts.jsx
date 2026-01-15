@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { FaArrowRight } from "react-icons/fa";
-import { BsCartPlusFill } from "react-icons/bs";
+import { BsCartPlusFill, BsFillCartDashFill } from "react-icons/bs";
 import { AiOutlineEye } from "react-icons/ai";
 import { FaHeartCirclePlus } from "react-icons/fa6";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, removeToCart } from "../../../features/CartSlice";
 
 const tabs = [
     "All Product",
@@ -14,6 +16,8 @@ const tabs = [
 
 const FeaturedProducts = ({ products }) => {
     const [activeTab, setActiveTab] = useState("All Product");
+    const dispatch = useDispatch()
+    const cart = useSelector((state) => state.cart)
 
     const filtered =
         activeTab === "All Product"
@@ -26,7 +30,7 @@ const FeaturedProducts = ({ products }) => {
 
     return (
         <section className="mt-14">
-            <div className="container mx-auto px-2 sm:px-0 2xl:px-32">
+            <div className="container mx-auto px-2 sm:px-0 2xl:px-3">
                 <div className="grid grid-cols-12 gap-6">
                     {/* LEFT BANNER */}
                     <div className="col-span-12 sm:col-span-3 bg-[#F7D046] rounded-lg px-6 py-2 h-137 relative overflow-hidden mb-4 sm:mb-0">
@@ -49,7 +53,7 @@ const FeaturedProducts = ({ products }) => {
                         </button>
 
                         <img
-                            src="public/3_1.svg"
+                            src="/3_1.svg"
                             alt=""
                             className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%]"
                         />
@@ -122,20 +126,28 @@ const FeaturedProducts = ({ products }) => {
                                             >
                                                 <FaHeartCirclePlus className="text-black hover:text-white transition-colors duration-300" />
                                             </div>
-
-                                            {/* CENTER */}
-                                            <div
-                                                className="
-                            bg-gray-200 rounded-full w-8 h-8 flex
-                            items-center justify-center cursor-pointer
-                            opacity-0 group-hover:opacity-100
-                            hover:bg-[#FA8232]
-                            transition-all duration-700
-                            pointer-events-auto
-                        "
-                                            >
-                                                <BsCartPlusFill className="text-black hover:text-white transition-colors duration-300" />
-                                            </div>
+                                            {cart.find(item => item.id === el.id) ? (
+                                                <div
+                                                    onClick={() => dispatch(removeToCart(el))}
+                                                    className="bg-gray-200 rounded-full w-8 h-8 flex
+      items-center justify-center cursor-pointer
+      opacity-0 group-hover:opacity-100
+      hover:bg-[#FA8232]
+      transition-all duration-700">
+                                                    <BsFillCartDashFill className="text-black hover:text-white transition-colors duration-300" />
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    onClick={() => dispatch(addToCart(el))}
+                                                    className="  bg-gray-200 rounded-full w-8 h-8 flex
+      items-center justify-center cursor-pointer
+      opacity-0 group-hover:opacity-100
+      hover:bg-[#FA8232]
+      transition-all duration-700"
+                                                >
+                                                    <BsCartPlusFill className="text-black hover:text-white transition-colors duration-300" />
+                                                </div>
+                                            )}
 
                                             {/* RIGHT */}
                                             <div

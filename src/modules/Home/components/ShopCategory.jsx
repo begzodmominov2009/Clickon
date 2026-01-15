@@ -13,7 +13,7 @@ const ShopCategory = ({ products }) => {
 
     return (
         <section>
-            <div className="container mx-auto px-2 sm:px-0 2xl:px-32 mt-5 sm:mt-10 relative">
+            <div className="container mx-auto px-2 sm:px-0 2xl:px-2 mt-5 sm:mt-10 relative">
                 <h1 className="text-[26px] sm:text-[32px] font-medium text-center mb-6">
                     Shop with Categorys
                 </h1>
