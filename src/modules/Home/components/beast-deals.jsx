@@ -7,6 +7,8 @@ import { FcDislike, FcLike } from 'react-icons/fc'
 import useCountdown from '../../../hooks/useCountdown'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, removeToCart } from '../../../features/CartSlice'
+import { addToLike } from '../../../features/LikeSlice'
+import { Link } from 'react-router-dom'
 
 const BeastDeals = ({ products }) => {
     const sliceProduct = products?.slice(54, 62)
@@ -109,6 +111,7 @@ const BeastDeals = ({ products }) => {
                                 >
                                     {/* LEFT */}
                                     <div
+                                    onClick={() => dispatch(addToLike(el))}
                                         className="
         bg-gray-200 rounded-full w-8 h-8 flex
         items-center justify-center cursor-pointer
@@ -145,7 +148,7 @@ const BeastDeals = ({ products }) => {
                                     )}
 
                                     {/* RIGHT */}
-                                    <div
+                                    <Link to={`product/${el.id}`}
                                         className="
         bg-gray-200 rounded-full w-8 h-8 flex
         items-center justify-center cursor-pointer
@@ -156,7 +159,7 @@ const BeastDeals = ({ products }) => {
       "
                                     >
                                         <AiOutlineEye className="text-black hover:text-white transition-colors duration-300" />
-                                    </div>
+                                    </Link>
                                 </div>
                             </div>
 

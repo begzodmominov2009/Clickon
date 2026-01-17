@@ -13,6 +13,9 @@ const Header = () => {
     const [currency, setCurrency] = useState("USD");
     const [hideTopBar, setHideTopBar] = useState(false);
     const cart = useSelector((state) => state.cart)
+    const like = useSelector((state) => state.like)
+    console.log(like);
+    
     const lastScrollY = useRef(0);
     const upScroll = useRef(0);
     const downScroll = useRef(0);
@@ -125,9 +128,12 @@ const Header = () => {
                     <div className="hidden lg:flex gap-5 text-white text-[29px]">
                         <div className="relative">
                             <Link to="/cart"><FiShoppingCart /></Link>
-                            <span className="absolute -top-2 text-[11px] -right-1 bg-[white] text-[black] px-[3px] rounded-full">{cart.length}</span>
+                            <span className="absolute -top-2 text-[11px] -right-1 bg-[white] text-[black] px-[3px] rounded-full">{cart?.length}</span>
                         </div>
-                        <Link to="/like"><AiOutlineHeart /></Link>
+                        <div className="relative">
+                            <Link to="/like"><AiOutlineHeart /></Link>
+                            <span className="absolute -top-2 text-[11px] -right-1 bg-[white] text-[black] px-[3px] rounded-full">{like?.length}</span>
+                        </div>
                         <Link to="/register"><AiOutlineUser /></Link>
                     </div>
                 </div>

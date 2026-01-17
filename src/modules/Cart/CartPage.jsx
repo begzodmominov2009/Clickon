@@ -1,195 +1,190 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
-import { FaArrowLeftLong } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
-import { FaArrowRight } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { decrease, increase, removeToCart } from '../../features/CartSlice';
 
-const CartPage = () => {
-  const cart = []; // UI ONLY (bo‘sh / fake)
+export default function ShoppingCartPage() {
+  const [cartItems, setCartItems] = useState([]);
+  const cart = useSelector((state) => state?.cart || []);
+  console.log(cart);
+  
+  const dispatch = useDispatch();
 
-  const subtotal = 99.0;
-  const shipping = 'Bepul';
-  const discount = 64;
-  const tax = 61.99;
-  const total = subtotal - discount + tax;
+  useEffect(() => {
+    if (cart) {
+      setCartItems(cart);
+    }
+  }, [cart]);
+
+  const updateQuantity = (id, change) => {
+    setCartItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, quantity: Math.max(1, item.quantity + change) }
+          : item
+      )
+    );
+  };
+
+  const removeItem = (id) => {
+    setCartItems(items => items.filter(item => item.id !== id));
+  };
+
+  // Hisob-kitob logikasi
+  const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
+  const subtotal = cartItems.reduce((sum, item) => {
+    const quantity = item.quantity || 1;
+    return sum + (item.price * quantity);
+  }, 0);
+
+  const originalTotal = cartItems.reduce((sum, item) => {
+    const quantity = item.quantity || 1;
+    const original = item.originalPrice || item.price;
+    return sum + (original * quantity);
+  }, 0);
+
+  const totalDiscount = originalTotal - subtotal;
+
+  const shipping = subtotal > 100 ? 0 : 10;
+
+  const total = subtotal + shipping;
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-2 md:px-0 2xl:px-33">
-        <div className="mb-8">
-          <h1 className="text-3xl font-semibold text-gray-900 flex items-center gap-3">
-            Shopping Card
-          </h1>
+    <div className="">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center gap-3 mb-8">
+          <ShoppingCart className="w-8 h-8 text-blue-600" />
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Cart Items Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-lg shadow">
-              <div className="p-6">
-                <div className="grid grid-cols-12 gap-4 pb-4 border-b border-[#E4E7E9] text-sm font-semibold text-gray-600 uppercase">
-                  <div className="col-span-5">Mahsulot</div>
-                  <div className="col-span-2 text-center">Narx</div>
-                  <div className="col-span-3 text-center">Miqdor</div>
-                  <div className="col-span-2 text-center">Jami</div>
-                </div>
+            {cartItems?.length === 0 ? (
+              <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+                <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 text-lg">Your cart is empty</p>
+              </div>
+            ) : (
+              cartItems?.map(item => (
+                <div key={item.id} className="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <img
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-full sm:w-24 h-48 sm:h-24 object-cover rounded-lg"
+                    />
 
-                {cart.length === 0 ? (
-                  <div className="py-16 text-center text-gray-500">
-                    <ShoppingCart className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                    <p className="text-lg">Savatingiz bo'sh</p>
-                    <div className="flex items-center justify-center pt-5">
-                      <Link
-                        to="/"
-                        className="w-[170px] h-[35px] border-[1px] border-orange-600 rounded-[3px] flex items-center gap-2 justify-center"
-                      >
-                        <p className="text-[15px] text-orange-600">
-                          <FaArrowLeftLong />
-                        </p>
-                        <p className="text-[15px] text-orange-600 font-semibold">
-                          Return to Shop
-                        </p>
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="divide-y">
-                    <div className="grid grid-cols-12 gap-4 py-6 items-center border-[#E4E7E9]">
-                      <div className="col-span-5 flex items-center gap-4">
-                        <button className="text-red-500 hover:text-red-700 transition">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
+
+                          {item.description && (
+                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                              {item.description}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-xl font-bold text-blue-600">
+                              ${item.price.toFixed(2)}
+                            </span>
+                            {item.originalPrice && item.originalPrice > item.price && (
+                              <>
+                                <span className="text-sm text-gray-400 line-through">
+                                  ${item.originalPrice.toFixed(2)}
+                                </span>
+                                <span className="text-sm text-green-600 font-medium">
+                                  -{Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}%
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => dispatch(removeToCart(item))}
+                          className="text-red-500 cursor-pointer hover:text-red-700 p-2 ml-2"
+                        >
                           <Trash2 className="w-5 h-5" />
                         </button>
-                        <div className="flex items-center gap-3">
-                          <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center overflow-hidden" />
-                        </div>
                       </div>
 
-                      <div className="col-span-2 text-center">
-                        <span className="text-gray-900 font-semibold">
-                          $99.00
-                        </span>
-                      </div>
-
-                      <div className="col-span-3 flex justify-center">
-                        <div className="flex items-center border-[1px] border-[#E4E7E9] rounded-[3px]">
-                          <button className="px-3 py-2">
-                            <Minus className="w-4 h-4" />
-                          </button>
-                          <input
-                            value={1}
-                            readOnly
-                            className="w-16 text-center py-2"
-                          />
-                          <button className="px-3 py-2">
-                            <Plus className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="col-span-2 text-center">
-                        <span className="text-gray-900 font-bold">
-                          $99.00
-                        </span>
+                      <div className="flex items-center">
+                        <button
+                        onClick={() => dispatch(decrease(item))}
+                          className="w-8 h-8 rounded-full cursor-pointer bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="w-12 text-center font-semibold">{item?.qty}</span>
+                        <button
+                          onClick={() => dispatch(increase(item))}
+                          className="w-8 h-8 rounded-full cursor-pointer bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
                       </div>
                     </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Summary Card */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-lg shadow-sm p-6 lg:sticky lg:top-35">
+              <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between items-center pb-3 border-b border-gray-300">
+                  <span className="text-gray-600">Total Products</span>
+                  <span className="font-semibold text-gray-900">{totalItems}</span>
+                </div>
+
+                <div className="flex justify-between items-center pb-3 border-b border-gray-300">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-semibold text-gray-900">${subtotal.toFixed(2)}</span>
+                </div>
+
+                {totalDiscount > 0 && (
+                  <div className="flex justify-between items-center pb-3 border-b border-gray-300">
+                    <span className="text-gray-600">Total Discount</span>
+                    <span className="font-semibold text-green-600">-${totalDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center pb-3 border-b border-gray-300">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className="font-semibold text-gray-900">
+                    {shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}
+                  </span>
+                </div>
+
+                {shipping > 0 && subtotal > 0 && (
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">
+                      Add ${(100 - subtotal).toFixed(2)} more for free shipping!
+                    </p>
                   </div>
                 )}
               </div>
 
-              {cart.length > 0 && (
-                <div className="flex items-center justify-between mx-[25px] pb-5 gap-2 sm:gap-0">
-                  <Link
-                    to="/"
-                    className="w-[170px] h-[35px] border-[1px] border-[#2DA5F3] rounded-[3px] flex items-center gap-2 justify-center"
-                  >
-                    <p className="text-[15px] text-[#2DA5F3]">
-                      <FaArrowLeftLong />
-                    </p>
-                    <p className="text-[15px] text-[#2DA5F3] font-semibold">
-                      Return to Shop
-                    </p>
-                  </Link>
-                  <button className="w-[140px] h-[35px] border-[1px] border-[#2DA5F3] rounded-[3px] flex items-center gap-2 justify-center">
-                    <p className="text-[15px] text-[#2DA5F3] font-semibold">
-                      Update cart
-                    </p>
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Card Totals Section */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">
-                Savat Jami
-              </h2>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
-                  <span>Oraliq jami</span>
-                  <span className="font-semibold text-gray-900">
-                    ${subtotal.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Yetkazib berish</span>
-                  <span className="font-semibold text-gray-900">
-                    {shipping}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Chegirma</span>
-                  <span className="font-semibold text-gray-900">
-                    ${discount}
-                  </span>
-                </div>
-                <div className="flex justify-between text-gray-600 pb-4 border-b border-[#E4E7E9]">
-                  <span>Soliq</span>
-                  <span className="font-semibold text-gray-900">
-                    ${tax.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between text-lg pt-2">
-                  <span className="font-bold text-gray-900">
-                    Jami
-                  </span>
-                  <span className="font-bold text-orange-500">
-                    ${total.toFixed(2)} USD
-                  </span>
-                </div>
+              <div className="flex justify-between items-center mb-6 pt-4 border-t-2 border-gray-300">
+                <span className="text-lg font-bold text-gray-900">Total</span>
+                <span className="text-2xl font-bold text-blue-600">${total.toFixed(2)}</span>
               </div>
 
-              <Link
-                to="/order"
-                className="flex items-center gap-2 justify-center w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg transition"
-              >
-                <p>Rasmiylashtirish</p>
-                <p>
-                  <FaArrowRight />
-                </p>
-              </Link>
-
-              <div className="mt-6">
-                <h3 className="font-semibold text-gray-900 mb-3">
-                  Promokod
-                </h3>
-                <input
-                  type="text"
-                  placeholder="Promokod"
-                  className="w-full px-4 py-3 border border-[#E4E7E9] rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button className="w-full border-[1px] border-blue-500 duration-300 hover:bg-blue-500 text-blue-500 hover:text-[white] font-semibold py-2 rounded-lg transition">
-                  Kiritish
-                </button>
-              </div>
+              <button className="w-full cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors">
+                Continue Shopping
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
-
-export default CartPage;
+}
