@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { X, Star, Heart, ShoppingCart, Plus, Minus } from 'lucide-react';
 
-export default function ProductModal() {
-    const [isOpen, setIsOpen] = useState(true);
+export default function ProductModal({ setIsOpen, setSelectedId }) {
     const [quantity, setQuantity] = useState(1);
     const [selectedColor, setSelectedColor] = useState('gray');
     const [selectedSize, setSelectedSize] = useState('256GB');
@@ -39,11 +38,10 @@ export default function ProductModal() {
     const memoryOptions = ['8GB', '16GB', '32GB'];
     const storageOptions = ['256GB SSD', '512GB SSD', '1TB SSD', '2TB SSD'];
 
-    if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+        <div onClick={() => setIsOpen(false)} className="fixed inset-0 backdrop-blur-lg bg-white/10 flex items-center justify-center z-150 p-4">
+            <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                     {/* Header */}
                     <div className="flex justify-between items-start mb-6">
@@ -138,8 +136,8 @@ export default function ProductModal() {
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`px-4 py-2 rounded border ${selectedSize === size
-                                                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                         >
                                             {size}
@@ -157,8 +155,8 @@ export default function ProductModal() {
                                             key={memory}
                                             onClick={() => setSelectedMemory(memory)}
                                             className={`px-4 py-2 rounded border ${selectedMemory === memory
-                                                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                         >
                                             {memory} unified memory
@@ -176,8 +174,8 @@ export default function ProductModal() {
                                             key={storage}
                                             onClick={() => setSelectedStorage(storage)}
                                             className={`px-4 py-2 rounded border ${selectedStorage === storage
-                                                    ? 'border-blue-600 bg-blue-50 text-blue-600'
-                                                    : 'border-gray-300 hover:border-gray-400'
+                                                ? 'border-blue-600 bg-blue-50 text-blue-600'
+                                                : 'border-gray-300 hover:border-gray-400'
                                                 }`}
                                         >
                                             {storage} Storage

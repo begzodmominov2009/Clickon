@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { X, Star, Heart, ShoppingCart, Plus, Minus } from 'lucide-react';
 
-export default function ProductModal({setIsOpen}) {
+export default function ProductModal({}) {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState('gray');
   const [selectedSize, setSelectedSize] = useState('256GB');
   const [selectedMemory, setSelectedMemory] = useState('8GB');
   const [selectedStorage, setSelectedStorage] = useState('512GB');
+  const [isOpen, setIsOpen] = useState(false)
 
   const product = {
     name: "2020 Apple MacBook Pro with Apple M1 Chip (13-inch, 8GB RAM, 256GB SSD Storage) - Space Gray",

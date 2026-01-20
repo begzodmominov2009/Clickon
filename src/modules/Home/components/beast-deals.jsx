@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { AiOutlineEye } from 'react-icons/ai'
 import { BsCartPlusFill, BsFillCartDashFill } from 'react-icons/bs'
 import { FaArrowRight, FaCartPlus } from 'react-icons/fa'
@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addToCart, removeToCart } from '../../../features/CartSlice'
 import { addToLike } from '../../../features/LikeSlice'
 import { Link } from 'react-router-dom'
+import ProductModal from '../../../components/singleModal/SingleModal'
 
 const BeastDeals = ({ products }) => {
     const sliceProduct = products?.slice(54, 62)
@@ -16,6 +17,8 @@ const BeastDeals = ({ products }) => {
     const time = useCountdown("2026-02-01T00:00:00");
     const dispatch = useDispatch()
     const cart = useSelector((state) => state.cart)
+    const [isOpen, setIsOpen] = useState(false)
+    const [isSelectedId, setSelectedId] = useState(null)
 
     return (
         <section className='mt-10 sm:mt-18'>
@@ -111,7 +114,7 @@ const BeastDeals = ({ products }) => {
                                 >
                                     {/* LEFT */}
                                     <div
-                                    onClick={() => dispatch(addToLike(el))}
+                                        onClick={() => dispatch(addToLike(el))}
                                         className="
         bg-gray-200 rounded-full w-8 h-8 flex
         items-center justify-center cursor-pointer
@@ -125,9 +128,9 @@ const BeastDeals = ({ products }) => {
                                     </div>
 
                                     {cart.find(item => item.id === el.id) ? (
-                                        <div 
-                                        onClick={() => dispatch(removeToCart(el))}
-                                        className="bg-gray-200 rounded-full w-8 h-8 flex
+                                        <div
+                                            onClick={() => dispatch(removeToCart(el))}
+                                            className="bg-gray-200 rounded-full w-8 h-8 flex
       items-center justify-center cursor-pointer
       opacity-0 group-hover:opacity-100
       hover:bg-[#FA8232]
@@ -148,7 +151,10 @@ const BeastDeals = ({ products }) => {
                                     )}
 
                                     {/* RIGHT */}
-                                    <Link to={`product/${el.id}`}
+                                    <div onClick={() => {
+                                        setIsOpen(true)
+                                        setSelectedId(el.id)
+                                    }}
                                         className="
         bg-gray-200 rounded-full w-8 h-8 flex
         items-center justify-center cursor-pointer
@@ -159,13 +165,14 @@ const BeastDeals = ({ products }) => {
       "
                                     >
                                         <AiOutlineEye className="text-black hover:text-white transition-colors duration-300" />
-                                    </Link>
+                                    </div>
                                 </div>
                             </div>
 
                         ))}
                     </div>
                 </div>
+                {isOpen ? (<ProductModal setIsOpen={setIsOpen} setSelectedId />) : ("")}
             </div>
         </section>
     )
